@@ -1,0 +1,74 @@
+# Project information
+site_name: Gluu Server Enterprise Edition 4.0 Docs
+site_description: Documentation for Gluu Server Edition Edition
+
+# Copyright
+copyright: Copyright &copy; 2019, Gluu, Inc.
+
+# Repository
+docs_dir: source
+repo_name: GluuFederation/docs-ee-prod
+repo_url: https://github.com/GluuFederation/docs-ee-prod/
+edit_uri: edit/4.0/docs/source
+
+# Configuration
+theme:
+    name: material
+    palette:
+        primary: 'green'
+        accent: 'green'
+    logo: 'gluu.jpg'
+    favicon: 'favicon.ico'
+extra:
+    version: '4.0'
+
+# Extensions
+markdown_extensions:
+- admonition
+- toc:
+     permalink: '#'
+- codehilite
+- pymdownx.superfences
+
+# Navigation
+nav:
+- 'Versions':
+    - '4.0': 'https://gluu.org/docs/ee/4.0/'
+    - '3.1.6': 'https://gluu.org/docs/ee/3.1.6/'
+    - '3.1.5': 'https://gluu.org/docs/ee/3.1.5/'
+    - '3.1.4': 'https://gluu.org/docs/ee/3.1.4/'
+- ' ': 'https:/gluu.org/docs'
+- ' ': 'https:/gluu.org/docs'
+- 'Introduction': 'index.md'
+- 'Whats new in v4': '4.x-intro.md'
+- 'Technical Reference':
+  - 'Build Logic': 'reference/index.md'
+  - '3rd-Party Containers': 'reference/third-party.md'
+  - 'Config Init': 'reference/config-init.md'
+  - 'OpenDJ/Wren:DS': 'reference/opendj.md'
+  - 'Persistence': 'reference/persistence.md'
+  - 'oxAuth': 'reference/oxauth.md'
+  - 'oxTrust': 'reference/oxtrust.md'
+  - 'oxShibboleth': 'reference/oxshibboleth.md'
+  - 'oxPassport': 'reference/oxpassport.md'
+  - 'NGINX': 'reference/nginx.md'
+  - 'Key Rotation': 'reference/key-rotation.md'
+  - 'CacheRefresh Rotation': 'reference/cr-rotate.md'
+  - 'Radius': 'reference/radius.md'
+  - 'Upgrade': 'reference/upgrade.md'
+- 'Operation Guide':
+  - 'Preparing the Server': 'operation/server.md'
+  - 'Managing the Vault': 'operation/vault.md'
+  - 'Managing Logs': 'operation/logging.md'
+  - 'Customizing oxAuth': 'operation/custom-oxauth.md'
+  - 'Customizing oxTrust': 'operation/custom-oxtrust.md'
+  - 'Custom LDAP Schema': 'operation/custom-schema.md'
+  - 'Upgrading': 'operation/upgrade.md'
+  - 'oxAuth Key Rotation': 'operation/key-rotation.md'
+  - 'Cache Refresh Rotation': 'operation/cr-rotate.md'
+  - 'oxTrust API': 'operation/oxtrust-api.md'
+- 'Deployment Examples':
+#  - 'Single Host (Docker Compose)': 'example/singlehost.md'
+  - 'Docker Swarm Mode': 'example/swarm-mode.md'
+  - 'Kubernetes': 'example/kubernetes.md'
+  # - 'RHEL': 'example/rhel.md'
