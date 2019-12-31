@@ -55,7 +55,7 @@ The following commands are supported by the container:
 
 The load command can be used either to generate or restore config and secret for the cluster.
 
--   To generate the initial configuration and secret, create `/path/to/host/volume/generate.json` similar to example below:
+1.   To generate the initial configuration and secret, create `/path/to/host/volume/generate.json` similar to example below:
 
     ```json
     {
@@ -68,72 +68,150 @@ The load command can be used either to generate or restore config and secret for
         "org_name": "Gluu Inc."
     }
     ```
+    
+1. Create config map `config-generate-params` 
 
-    and mount the volume into container:
+   ```sh
+   kubectl create cm config-generate-params --from-file=generate.json
+   ```
 
-    ```sh
-    docker run \
-        --rm \
-        --network container:consul \
-        -e GLUU_CONFIG_ADAPTER=consul \
-        -e GLUU_CONFIG_CONSUL_HOST=consul \
-        -e GLUU_SECRET_ADAPTER=vault \
-        -e GLUU_SECRET_VAULT_HOST=vault \
-        -v /path/to/host/volume:/opt/config-init/db \
-        -v /path/to/vault_role_id.txt:/etc/certs/vault_role_id \
-        -v /path/to/vault_secret_id.txt:/etc/certs/vault_secret_id \
-        gluufederation/config-init:4.0.1_05 load
+
+1. Mount the configmap into container and apply the yaml:
+
+    ```yaml
+	apiVersion: batch/v1
+	kind: Job
+	metadata:
+	  name: config-init-load-job
+	spec:
+	  template:
+	    spec:
+	      restartPolicy: Never
+	      volumes:
+	        - name: config-generate-params
+	          configMap:
+	            name: config-generate-params
+	      containers:
+	        - name: config-init-load
+	          image: gluufederation/config-init:4.0.1_05
+	          volumeMounts:
+	            - mountPath: /opt/config-init/db/generate.json
+	              name: config-generate-params
+	              subPath: generate.json
+	          envFrom:
+	          - configMapRef:
+	              name: config-cm
+	          args: ["load"]
     ```
+    
+-   To restore configuration and secrets from a backup of `/path/to/host/volume/config.json` and `/path/to/host/volume/secret.json`: mount the directory as `/opt/config-init/db` inside the container:
 
--   To restore configuration and secrets from a backup of `/path/to/host/volume/config.json` and `/path/to/host/volume/secret.json`, mount the directory as `/opt/config-init/db` inside the container:
+1. Create config map `config-params` and `secret-params`:
 
-    ```sh
-    docker run \
-        --rm \
-        --network container:consul \
-        -e GLUU_CONFIG_ADAPTER=consul \
-        -e GLUU_CONFIG_CONSUL_HOST=consul \
-        -e GLUU_SECRET_ADAPTER=vault \
-        -e GLUU_SECRET_VAULT_HOST=vault \
-        -v /path/to/host/volume:/opt/config-init/db \
-        -v /path/to/vault_role_id.txt:/etc/certs/vault_role_id \
-        -v /path/to/vault_secret_id.txt:/etc/certs/vault_secret_id \
-        gluufederation/config-init:4.0.1_05 load
-    ```
+   ```sh
+   kubectl create cm config-params --from-file=config.json
+   kubectl create cm secret-params --from-file=secret.json
+   ```
+   
+1. Mount the configmap into container and apply the yaml:
+
+    ```yaml
+	apiVersion: batch/v1
+	kind: Job
+	metadata:
+	  name: config-init-load-job
+	spec:
+	  template:
+	    spec:
+	      restartPolicy: Never
+	      volumes:
+	        - name: config-params
+	          configMap:
+	            name: config-params
+	       	- name: secret-params
+	          configMap:
+	            name: secret-params
+	      containers:
+	        - name: config-init-load
+	          image: gluufederation/config-init:4.0.1_05
+	          volumeMounts:
+	            - mountPath: /opt/config-init/db/config.json
+	              name: config-params
+	              subPath: config.json
+	            - mountPath: /opt/config-init/db/secret.json
+	              name: secret-params
+	              subPath: secret.json
+	          envFrom:
+	          - configMapRef:
+	              name: config-cm
+	          args: ["load"]
+	   ```
+
 
 ### dump
 
 The dump command will dump all configuration and secrets from the backends saved into the `/opt/config-init/db/config.json` and `/opt/config-init/db/secret.json` files.
 
-Please note that to dump this file into the host, mount a volume to the `/opt/config-init/db` directory as seen in the following example:
 
-```sh
-docker run \
-    --rm \
-    --network container:consul \
-    -e GLUU_CONFIG_ADAPTER=consul \
-    -e GLUU_CONFIG_CONSUL_HOST=consul \
-    -e GLUU_SECRET_ADAPTER=vault \
-    -e GLUU_SECRET_VAULT_HOST=vault \
-    -v /path/to/host/volume:/opt/config-init/db \
-    -v /path/to/vault_role_id.txt:/etc/certs/vault_role_id \
-    -v /path/to/vault_secret_id.txt:/etc/certs/vault_secret_id \
-    gluufederation/config-init:4.0.1_05 dump
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: config-init-load-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: config-init-load
+          image: gluufederation/config-init:4.0.1_05
+          command:
+            - /bin/sh
+            - -c
+            - |
+                /app/scripts/entrypoint.sh dump
+                sleep 300
+          envFrom:
+          - configMapRef:
+              name: config-cm
 ```
+
+Copy over the files to host
+
+`kubectl cp config-init-load-job:opt/config-init/db .`
 
 ### migrate
 
 The migrate command exports secrets that were previously saved in the configuration backend into the secret backend.
 
-```sh
-docker run \
-    --rm \
-    --network container:consul \
-    -e GLUU_CONFIG_ADAPTER=consul \
-    -e GLUU_CONFIG_CONSUL_HOST=consul \
-    -e GLUU_SECRET_ADAPTER=vault \
-    -e GLUU_SECRET_VAULT_HOST=vault \
-    -v /path/to/vault_role_id.txt:/etc/certs/vault_role_id \
-    -v /path/to/vault_secret_id.txt:/etc/certs/vault_secret_id \
-    gluufederation/config-init:4.0.1_05 migrate
-```
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: config-init-load-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: config-params
+          configMap:
+            name: config-params
+       	- name: secret-params
+          configMap:
+            name: secret-params
+      containers:
+        - name: config-init-load
+          image: gluufederation/config-init:4.0.1_05
+          volumeMounts:
+            - mountPath: /opt/config-init/db/config.json
+              name: config-params
+              subPath: config.json
+            - mountPath: /opt/config-init/db/secret.json
+              name: secret-params
+              subPath: secret.json
+          envFrom:
+          - configMapRef:
+              name: config-cm
+          args: ["migrate"]
+   ```

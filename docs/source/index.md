@@ -1,6 +1,6 @@
-# Gluu Server Docker Edition (DE)
+# Gluu Server Enterprise Edition (EE)
 !!! Attention
-    In 2020, Docker Edition (DE) will be renamed to Enterprise Edition (EE). More great enhancements, features, and improvements are on the way!
+    In 2020, Kubernetes is now Enterprise Edition (EE). More great enhancements, features, and improvements are on the way!
 
 
 ## Overview
@@ -18,8 +18,8 @@ The Gluu Server supports installation via Kubernetes.
 If you have questions or feedback, please open a ticket on the [Gluu support portal](https://support.gluu.org/).
 
 !!! Note
-    Support for Docker Edition deployments is only guaranteed under [Enterprise support plans](https://gluu.org/pricing). However, the code and documentation remain free and open source.
+    Support for Enterprise Edition deployments is only guaranteed under [Enterprise support plans](https://gluu.org/pricing).
     
 ## License
 
-Gluu Server DE is available under the [GLUU SUPPORT license](https://github.com/GluuFederation/enterprise-edition/blob/4.0/LICENSE).
+Gluu Server EE is available under the [GLUU SUPPORT license](https://github.com/GluuFederation/enterprise-edition/blob/4.0/LICENSE).

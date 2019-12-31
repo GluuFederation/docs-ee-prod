@@ -54,19 +54,9 @@ The following environment variables are supported by the container:
 ## Getting Metadata
 
 !!! Note
-    Since the metadata scope is per node, this container must be deployed in each node. Use `mode=global` in Swarm Mode services or `DaemonSet` in Kubernetes.
+    Since the metadata scope is per node, this container must be deployed in each node. Use `DaemonSet` in Kubernetes.
 
 1.  Set a predefined label on oxTrust container.
-
-    Example for Docker:
-
-    ```sh
-    docker run \
-        --label APP_NAME=oxtrust \
-        gluufederation/oxtrust:4.0.1_05
-    ```
-
-    Example for Kubernetes:
 
     ```yaml
     # oxtrust.yaml
@@ -79,16 +69,4 @@ The following environment variables are supported by the container:
         APP_NAME: oxtrust
     ```
 
-2.  Set the appropriate `GLUU_CONTAINER_METADATA` environment variable.
-    If the container is running on the Docker scheduler, the `docker.sock` file must be mounted into container.
-
-    Example for Docker:
-
-    ```sh
-    docker run \
-        -e GLUU_CONTAINER_METADATA=docker \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        gluufederation/cr-rotate:4.0.1_02
-    ```
-
-    For Kubernetes, simply set the environment variable `GLUU_CONTAINER_METADATA=kubernetes`.
+2.  Set the environment variable `GLUU_CONTAINER_METADATA=kubernetes`.

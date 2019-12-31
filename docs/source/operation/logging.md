@@ -1,144 +1,12 @@
 ## Overview
 
-In a Docker environment where each container can have one or more replicas, it is easier to check the log by collecting all containers' logs, storing them in a single place and possibly searching the logs later. There are tools available to assist in this task, both open source and paid. This guide will show an example of how to collect selected container's logs (oxAuth, oxTrust, OpenDJ, oxShibboleth, oxPassport, and optionally NGINX), using [Filebeat](https://www.elastic.co/products/beats/filebeat), [Elasticsearch](https://www.elastic.co/products/elasticsearch), and [Kibana](https://www.elastic.co/products/kibana).
+In a Kubernetes environment where each pod can have one or more replicas, it is easier to check the log by collecting all containers' logs, storing them in a single place and possibly searching the logs later. There are tools available to assist in this task, both open source and paid. This guide will show an example of how to collect selected container's logs (oxAuth, oxTrust, OpenDJ, oxShibboleth, oxPassport, and optionally NGINX), using [Filebeat](https://www.elastic.co/products/beats/filebeat), [Elasticsearch](https://www.elastic.co/products/elasticsearch), and [Kibana](https://www.elastic.co/products/kibana).
 
 ### Prerequisites
 
-1.  Choose the `json-file` logging driver for the Docker daemon, as Filebeat works best with this driver. By default, the Docker installation uses `json-file` driver, unless set to another driver. Use `docker info | grep 'Logging Driver'` to check current logging driver.
 1.  The Elasticsearch container requires the host's specific `vm.max_map_count` kernel setting to be at least 262144. Refer to the official installation page of Elasticsearch [here](https://www.elastic.co/guide/en/elasticsearch/reference/6.6/docker.html#docker-cli-run-prod-mode).
 
-### Logging Containers in Docker/Docker Swarm
 
-1.  Create `filebeat.yml` for custom Filebeat configuration:
-
-    ```yaml
-    filebeat.config:
-      modules:
-        path: ${path.config}/modules.d/*.yml
-        reload.enabled: false
-
-    output.elasticsearch:
-      hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
-
-    filebeat.autodiscover:
-      providers:
-        - type: docker
-          templates:
-            - condition:
-                regexp:
-                  docker.container.image: "ox[auth|trust|shibboleth]"
-              config:
-                - type: docker
-                  containers.ids:
-                    - "${data.docker.container.id}"
-                  encoding: utf-8
-                  enabled: true
-                  document_type: docker
-                  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
-                  multiline.negate: true
-                  multiline.match: after
-            - condition:
-                contains:
-                  docker.container.image: wrends
-              config:
-                - type: docker
-                  containers.ids:
-                    - "${data.docker.container.id}"
-                  encoding: utf-8
-                  enabled: true
-                  document_type: docker
-                  include_lines: ['^\[']
-            - condition:
-                contains:
-                  docker.container.image: oxpassport
-              config:
-                - type: docker
-                  containers.ids:
-                    - "${data.docker.container.id}"
-                  encoding: utf-8
-                  enabled: true
-                  document_type: docker
-                  include_lines: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
-            - condition:
-                contains:
-                  docker.container.image: nginx
-              config:
-                - type: docker
-                  containers.ids:
-                    - "${data.docker.container.id}"
-                  encoding: utf-8
-                  enabled: true
-                  document_type: docker
-                  exclude_files: ['\.gz$']
-
-    processors:
-      # decode the log field (sub JSON document) if JSONencoded, then maps it's fields to elasticsearch fields
-      - decode_json_fields:
-          fields: ["log"]
-          target: ""
-          # overwrite existing target elasticsearch fields while decoding json fields
-          overwrite_keys: true
-      - add_docker_metadata: ~
-      - add_cloud_metadata: ~
-
-    # Write Filebeat own logs only to file to avoid catching them with itself in docker log files
-    logging.to_files: true
-    logging.to_syslog: false
-    logging.level: warning
-    ```
-
-    For a Docker Swarm setup, save the file above into Docker configurations so this config can be injected into multiple Filebeat containers.
-
-1.  Create a Docker manifest file, i.e. `docker-compose.yml`:
-
-    ```yaml
-    # The following example is based on `docker-compose` manifest file:
-    version: "2.3"
-
-    services:
-      filebeat:
-        image: docker.elastic.co/beats/filebeat:6.6.1
-        command: filebeat -e -strict.perms=false
-        container_name: filebeat
-        restart: unless-stopped
-        user: root
-        volumes:
-          - /path/to/filebeat/volumes/data:/usr/share/filebeat/data:rw
-          - /path/to/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-          - /var/run/docker.sock:/var/run/docker.sock:ro
-          - /var/lib/docker/containers:/var/lib/docker/containers:ro
-        labels:
-          - "SERVICE_IGNORE=yes"
-
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
-        container_name: elasticsearch
-        restart: unless-stopped
-        environment:
-          - cluster.name=gluu-cluster
-          - bootstrap.memory_lock=true
-          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-          - "TAKE_FILE_OWNERSHIP=true"
-        ulimits:
-          memlock:
-            soft: -1
-            hard: -1
-        volumes:
-          - /path/to/elasticsearch/volume/data:/usr/share/elasticsearch/data
-        labels:
-          - "SERVICE_IGNORE=yes"
-
-      kibana:
-        image: docker.elastic.co/kibana/kibana:6.6.1
-        container_name: kibana
-        restart: unless-stopped
-        labels:
-          - "SERVICE_IGNORE=yes"
-    ```
-
-    Adjust the manifest file if Docker Swarm mode is used.
-
-1.  Deploy the containers using `docker-compose up -d` or `docker stack deploy $STACK_NAME` command.
 
 ### Logging Containers in Kubernetes
 
@@ -444,19 +312,7 @@ In a Docker environment where each container can have one or more replicas, it i
 The examples above don't expose Kibana UI port 5601 for security reasons.
 Below are examples of how to access the UI:
 
-1.  Kubernetes
+- expose the port using `kubectl port-forward $KIBANA_POD 5601:5601`
+- use SSH tunneling to get the port locally using `ssh -L 5601:localhost:5601 $USER@$REMOTE_HOST`
+- visit `http://localhost:5601` to access the Kibana UI
 
-    - expose the port using `kubectl port-forward $KIBANA_POD 5601:5601`
-    - use SSH tunneling to get the port locally using `ssh -L 5601:localhost:5601 $USER@$REMOTE_HOST`
-    - visit `http://localhost:5601` to access the Kibana UI
-
-1.  Docker/Docker Swarm
-
-    - get the Kibana's container IP
-    - visit the browser at `http://$KIBANA_CONTAINER_IP:5601`.
-
-    or for Swarm mode:
-
-    - ensure the Kibana container exposes port 5601 to the host's `loopback` address (`127.0.0.1`), similar to `docker run -p 127.0.0.1:5601:5601 kibana`
-    - use SSH tunneling using `ssh -L 5601:localhost:5601 $USER@$REMOTE_HOST`
-    - visit `http://localhost:5601` to access the Kibana UI

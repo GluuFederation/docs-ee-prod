@@ -19,30 +19,16 @@ The oxTrust API has two modes that administrators can configure according to nee
 !!! Note
     Test mode is not recommended for production. Choose UMA mode instead.
 
-1.  Set environment variable `GLUU_OXTRUST_API_ENABLED=true` and `GUU_OXTRUST_API_TEST_MODE=true` when running `gluufederation/persistence` container to enable oxTrust API:
+1.  Set environment variable `GLUU_OXTRUST_API_ENABLED=true` and `GUU_OXTRUST_API_TEST_MODE=true` when running `gluufederation/persistence` pod to enable oxTrust API:
 
-    ```sh
-    docker run \
-        --rm \
-        --name persistence \
-        -e GLUU_CONFIG_CONSUL_HOST=consul \
-        -e GLUU_SECRET_VAULT_HOST=vault \
-        -e GLUU_PERSISTENCE_TYPE=ldap \
-        -e GLUU_PERSISTENCE_LDAP_MAPPING=default \
-        -e GLUU_LDAP_URL=ldap:1636 \
-        -e GLUU_OXTRUST_API_ENABLED=true \
-        -e GLUU_OXTRUST_API_TEST_MODE=true \
-        -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
-        -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
-        gluufederation/persistence:4.0.1_05
-    ```
-    
-    If using kubernetes `create.sh` answer yes to both the following prompts: 
+    When using `create.sh` answer yes to both the following prompts: 
     
     ```sh
     Enable oxTrust Api         [N]?[Y/N]                               y
     Enable oxTrust Test Mode [N]?[Y/N]                                 y
     ```
+    
+    `create.sh` modifies `GLUU_OXTRUST_API_ENABLED=true`and `GLUU_OXTRUST_API_TEST_MODE=true` in `persistence.yaml`
     
     Alternatively, enable the features using oxTrust UI. 
 
@@ -101,29 +87,16 @@ The oxTrust API has two modes that administrators can configure according to nee
 ### UMA Mode
 
 1.  Set environment variable `GLUU_OXTRUST_API_ENABLED=true` when running `gluufederation/persistence` container to enable oxTrust API:
-
-    ```sh
-    docker run \
-        --rm \
-        --name persistence \
-        -e GLUU_CONFIG_CONSUL_HOST=consul \
-        -e GLUU_SECRET_VAULT_HOST=vault \
-        -e GLUU_PERSISTENCE_TYPE=ldap \
-        -e GLUU_PERSISTENCE_LDAP_MAPPING=default \
-        -e GLUU_LDAP_URL=ldap:1636 \
-        -e GLUU_OXTRUST_API_ENABLED=true \
-        -e GLUU_OXTRUST_API_TEST_MODE=false \
-        -v $PWD/vault_role_id.txt:/etc/certs/vault_role_id \
-        -v $PWD/vault_secret_id.txt:/etc/certs/vault_secret_id \
-        gluufederation/persistence:4.0.1_05
-    ```
     
-    If using kubernetes `create.sh` answer `Y` to enabling `oxTrust API` and `N` to enabling `Test Mode`.
+    When using kubernetes `create.sh` answer `Y` to enabling `oxTrust API` and `N` to enabling `Test Mode`.
     
     ```sh
     Enable oxTrust Api         [N]?[Y/N]                               y
     Enable oxTrust Test Mode [N]?[Y/N]                                 N
     ```
+    
+    `create.sh` modifies `GLUU_OXTRUST_API_ENABLED=true`and `GLUU_OXTRUST_API_TEST_MODE=true` in `persistence.yaml`
+    
     Alternatively, enable the features using oxTrust UI.
 
 1.  Make request to oxTrust API (in this example, we're going to use `https://demoexample.gluu.org` URL), for example:
@@ -142,20 +115,13 @@ The oxTrust API has two modes that administrators can configure according to nee
     Extract the ticket from `WWW-Authenticate` header; in this example the ticket is `ed5d9fa7-7117-4fc0-85c2-17a064448dc8`.
 
 1.  Copy `api-rp.jks` and `api-rp-keys.json` from oxAuth container into host:
-
-    ```sh
-    docker cp oxauth:/etc/certs/api-rp.jks api-rp.jks \
-        && docker cp oxauth:/etc/certs/api-rp-keys.json api-rp-keys.json
-    ```
     
-    In kubernetes get the oxauth pod name and use the following commands:
+    Get the oxauth pod name and use the following commands:
   
-      ```sh
+    ```sh
     kubectl cp oxauth-acsacsd2123:etc/certs/api-rp.jks api-rp.jks \
         && kubectl cp oxauth-acsacsd2123:etc/certs/api-rp-keys.json api-rp-keys.json
     ```
-    
-
 
 1.  Determine algorithm for signing JWT string, i.e. `RS256`.
 

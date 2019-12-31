@@ -1,7 +1,7 @@
-Gluu Docker Edition (DE) Documentation
+Gluu Enterprise Edition (EE) Documentation
 ======================================
 
-This is the home of the documentation for Gluu Server Docker Edition, which is 
+This is the home of the documentation for Gluu Server Enterprise Edition, which is 
 built using mkdocs, and is rendered as html on the [Gluu Documentation site]
 (https://www.gluu.org/docs-enterprise-edition/)
 .
