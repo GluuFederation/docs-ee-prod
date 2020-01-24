@@ -1,15 +1,15 @@
 # Project information
-site_name: Gluu Server Enterprise Edition 4.0 Docs
+site_name: Gluu Server Enterprise Edition 4.1 Docs
 site_description: Documentation for Gluu Server Edition Edition
 
 # Copyright
-copyright: Copyright &copy; 2019, Gluu, Inc.
+copyright: Copyright &copy; 2020, Gluu, Inc.
 
 # Repository
 docs_dir: source
 repo_name: GluuFederation/docs-ee-prod
 repo_url: https://github.com/GluuFederation/docs-ee-prod/
-edit_uri: edit/4.0/docs/source
+edit_uri: edit/4.1/docs/source
 
 # Configuration
 theme:
@@ -33,10 +33,7 @@ markdown_extensions:
 # Navigation
 nav:
 - 'Versions':
-    - '4.0': 'https://gluu.org/docs/ee/4.0/'
-    - '3.1.6': 'https://gluu.org/docs/ee/3.1.6/'
-    - '3.1.5': 'https://gluu.org/docs/ee/3.1.5/'
-    - '3.1.4': 'https://gluu.org/docs/ee/3.1.4/'
+    - '4.1': 'https://gluu.org/docs/ee/4.1/'
 - ' ': 'https:/gluu.org/docs'
 - ' ': 'https:/gluu.org/docs'
 - 'Introduction': 'index.md'
