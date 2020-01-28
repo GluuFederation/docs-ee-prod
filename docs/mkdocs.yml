@@ -20,7 +20,7 @@ theme:
     logo: 'gluu.jpg'
     favicon: 'favicon.ico'
 extra:
-    version: '4.0'
+    version: '4.1'
 
 # Extensions
 markdown_extensions:
