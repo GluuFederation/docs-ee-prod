@@ -47,27 +47,28 @@ As an example, add text to the top of the form and change the color of the butto
 
 1. Attach the config to Pod using YAML file:
 
-	```yaml
-	apiVersion: v1
-	kind: Pod
-	metadata:
-	  name: oxauth
-	spec:
-	  containers:
-	    image: gluufederation/oxauth:4.0.1_06
-	    volumeMounts:
-	      - name: oxauth-pages-volume
-	        mountPath: /opt/gluu/jetty/oxauth/custom/pages # login.xthml will be mounted under this directory
-	      - name: oxauth-static-volume
-	        mountPath: /opt/gluu/jetty/oxauth/custom/static # custom.css will be mounted under this directory
-	    volumes:
-	      - name: oxauth-pages-volume
-	        configMap:
-	          name: oxauth-custom-html
-	      - name: oxauth-static-volume
-	        configMap:
-	          name: oxauth-custom-css         <div class="login_bx">
-	```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: oxauth
+    spec:
+      containers:
+      - name: oxauth
+        image: gluufederation/oxauth:4.0.1_06
+        volumeMounts:
+          - name: oxauth-pages-volume
+            mountPath: /opt/gluu/jetty/oxauth/custom/pages # login.xthml will be mounted under this directory
+          - name: oxauth-static-volume
+            mountPath: /opt/gluu/jetty/oxauth/custom/static # custom.css will be mounted under this directory
+        volumes:
+          - name: oxauth-pages-volume
+            configMap:
+              name: oxauth-custom-html
+          - name: oxauth-static-volume
+            configMap:
+              name: oxauth-custom-css         <div class="login_bx">
+    ```
 
     Save the file and login to oxAuth/oxTrust UI via browser.
 

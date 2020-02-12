@@ -44,7 +44,6 @@ As we can see, `78-myAttributes.ldif` is mounted as `/opt/opendj/template/config
 In this scenario, we assume the pod has been running and we need to add a new schema named `79-otherAttributes.ldif`.
 
 ```yaml
-    # after deployment, restart service if needed
     apiVersion: v1
     kind: StatefulSet
     metadata:
@@ -54,13 +53,10 @@ In this scenario, we assume the pod has been running and we need to add a new sc
         image: gluufederation/wrends:4.0.1_02
         volumeMounts:
           - name: opendj-schema-volume
-            mountPath: /opt/opendj/config/schema/78-myAttributes.ldif
-            subPath: 78-myAttributes.ldif
+            mountPath: /opt/opendj/config/schema/79-otherAttributes.ldif
+            subPath: 79-otherAttributes.ldif
       volumes:
         - name: opendj-schema-volume
           configMap:
             name: opendj-custom-schema
 ```
-
-!!! Note
-    Adding new schema may require restarting the container.

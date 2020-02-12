@@ -1,13 +1,13 @@
 ## Overview
 
-Docker image packaging for oxTrust.
+Upgrade Container for Gluu Server Docker Edition.
 
 ## Versions
 
-- Stable: `gluufederation/oxtrust:4.0.1_05`.
-- Unstable: `gluufederation/oxtrust:4.0.1_dev`.
+- Stable: `gluufederation/upgrade:4.0.1_01`
+- Unstable: `gluufederation/upgrade:4.0.1_dev`
 
-Refer to [Changelog](https://github.com/GluuFederation/docker-oxtrust/blob/4.0/CHANGES.md) for details on new features, bug fixes, or older releases.
+Refer to [Changelog](https://github.com/GluuFederation/docker-upgrade/blob/4.0/CHANGES.md) for details on new features, bug fixes, or older releases.
 
 ## Environment Variables
 
@@ -41,13 +41,6 @@ The following environment variables are supported by the container:
 - `GLUU_SECRET_KUBERNETES_USE_KUBE_CONFIG`: Load credentials from `$HOME/.kube/config`, only useful for non-container environment (default to `false`).
 - `GLUU_WAIT_MAX_TIME`: How long the startup "health checks" should run (default to `300` seconds).
 - `GLUU_WAIT_SLEEP_DURATION`: Delay between startup "health checks" (default to `10` seconds).
-- `GLUU_LDAP_URL`: The LDAP database's IP address or hostname. Default is `localhost:1636`. Multiple URLs can be used using comma-separated values (i.e. `192.168.100.1:1636,192.168.100.2:1636`).
-- `GLUU_MAX_RAM_FRACTION`: Used in conjunction with Docker memory limitations (`docker run -m <mem>`) to identify the fraction of the maximum amount of heap memory you want the JVM to use.
-- `GLUU_DEBUG_PORT`: port of remote debugging (if omitted, remote debugging will be disabled).
-- `GLUU_OXAUTH_BACKEND`: the oxAuth backend address, default is `localhost:8081` (used in `wait_for.py` script)
-- `GLUU_SHIB_SOURCE_DIR`: absolute path to directory to copy Shibboleth config from (default is `/opt/shibboleth-idp`)
-- `GLUU_SHIB_TARGET_DIR`: absolute path to directory to copy Shibboleth config to (default is `/opt/shared-shibboleth-idp`)
-- `GLUU_DEBUG_PORT`: port of remote debugging (if omitted, remote debugging will be disabled).
 - `GLUU_PERSISTENCE_TYPE`: Persistence backend being used (one of `ldap`, `couchbase`, or `hybrid`; default to `ldap`).
 - `GLUU_PERSISTENCE_LDAP_MAPPING`: Specify data that should be saved in LDAP (one of `default`, `user`, `cache`, `site`, or `token`; default to `default`). Note this environment only takes effect when `GLUU_PERSISTENCE_TYPE` is set to `hybrid`.
 - `GLUU_LDAP_URL`: Address and port of LDAP server (default to `localhost:1636`); required if `GLUU_PERSISTENCE_TYPE` is set to `ldap` or `hybrid`.
@@ -56,6 +49,25 @@ The following environment variables are supported by the container:
 - `GLUU_COUCHBASE_CERT_FILE`: Couchbase root certificate location (default to `/etc/certs/couchbase.crt`); required if `GLUU_PERSISTENCE_TYPE` is set to `couchbase` or `hybrid`.
 - `GLUU_COUCHBASE_PASSWORD_FILE`: Path to file contains Couchbase password (default to `/etc/gluu/conf/couchbase_password`); required if `GLUU_PERSISTENCE_TYPE` is set to `couchbase` or `hybrid`.
 
-## Shared Directories
+## Entrypoint Parameters
 
-See [shared directories on oxShibboleth](/reference/oxshibboleth/#shared-directories) for reference.
+The following parameters are supported by the container:
+
+- `--source`: Gluu version to upgrade from (required)
+- `--target`: Gluu version to upgrade to; usually the latest version (required)
+- `--help`: Show all available parameters
+
+Example:
+
+    docker run \
+        --rm \
+        --network container:consul \
+        -e GLUU_CONFIG_CONSUL_HOST=consul \
+        -e GLUU_SECRET_VAULT_HOST=vault \
+        -e GLUU_PERSISTENCE_TYPE=ldap \
+        -e GLUU_LDAP_URL=ldap:1636 \
+        -v /path/to/vault_role_id.txt:/etc/certs/vault_role_id \
+        -v /path/to/vault_secret_id.txt:/etc/certs/vault_secret_id \
+        gluufederation/upgrade:4.0.1_01 \
+            --source 3.1.6 \
+            --target 4.0.1

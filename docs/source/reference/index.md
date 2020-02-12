@@ -1,20 +1,24 @@
-## Operating System
+## Image References
+A list of references to all the images used in Gluu enterprise can be found below:
 
-Size was a major consideration in the base Docker image we used for our containers. Because of that, we use Alpine Linux in most of our Docker images, which comes in at 5 MB by default. Based on comparisons between other base images, we've saved roughly 50-70% of space utilizing Alpine. The average size of each of our containers is about 269 MB due to dependencies.
+[Config Init](https://gluu.org/docs/de/4.1/reference/config-init/)
 
-## Startup
+[OpenDJ / Wren:DS](https://gluu.org/docs/de/4.1/reference/opendj/)
 
-Docker containers generally have entrypoint scripts to prepare templates, configure files, run services, or anything else you need to run to properly initialize a container and run the process. For our containers, we pull most of our files and certificates from config and secret backends.
+[Persistence](https://gluu.org/docs/de/4.1/reference/persistence/)
 
-Because there is a heirarchy of function to Gluu Server, the startup order is managed by custom scripts (originally designed by one of the contributors, Torstein Krause Johansen/@skybert), to ensure the containers don't begin their launch processes until the services superior to the container are fully started. However, there is a time limit, so a container dependent upon another container could fail if those "health checks" aren't being met.
+[oxAuth](https://gluu.org/docs/de/4.1/reference/oxauth/)
 
-## Networking Considerations
+[oxTrust](https://gluu.org/docs/de/4.1/reference/oxtrust/)
 
-To ensure the Gluu Server can be accessed publicly, ports 80 and 443 must be published to the host server. Both are web server ports.
+[oxShibboleth](https://gluu.org/docs/de/4.1/reference/oxshibboleth/)
 
-oxTrust is an OpenID Connect client, so its container is dependent upon oxAuth's `/.well-known/openid-configuration` endpoint, which is only accessible if web server is started. So if the oxTrust container cannot navigate to `https://<hostname>/.well-known/openid-configuration`, it will fail to finish initialization. The container will most likely not exit.
+[oxPassport](https://gluu.org/docs/de/4.1/reference/oxpassport/)
 
-## Tini as Init for Container
+[Key Rotation](https://gluu.org/docs/de/4.1/reference/key-rotation/)
 
-Almost all Gluu Server DE images use [Tini](https://github.com/krallin/tini) to handle signal forwarding and to reap processes.
-We decided to include `tini` in the build to ensure all container schedulers/orchestrators have an easy way to configure signal forwarding and process reaping.
+[CacheRefresh Rotation](https://gluu.org/docs/de/4.1/reference/cr-rotate/)
+
+[Radius](https://gluu.org/docs/de/4.1/reference/radius/)
+
+[Upgrade](https://gluu.org/docs/de/4.1/reference/upgrade/)

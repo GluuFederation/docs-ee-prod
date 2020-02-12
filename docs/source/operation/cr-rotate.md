@@ -12,10 +12,10 @@ Cache refresh requires an IP address, but in container deployments, the IP can b
     cd enterprise-edition-4.0/kubernetes/
   ```
 
-- Option 1 `create.sh`:
+- Option 1 `pygluu-kubernetes.pyz`:
 
   ```bash
-    bash create.sh
+    pygluu-kubernetes.pyz generate-settings
   ```
   
 - Option 2 `kustomize`:
