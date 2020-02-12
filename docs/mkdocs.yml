@@ -38,7 +38,7 @@ nav:
 - ' ': 'https:/gluu.org/docs'
 - 'Introduction': 'index.md'
 - 'Whats new in v4': '4.x-intro.md'
-- 'Installation': 'index.md'
+- 'Installation':
   - 'Packaging the installer': 'installation/package.md'
   - 'Setup': 'installation/kubernetes.md'
 - 'Technical Reference':
