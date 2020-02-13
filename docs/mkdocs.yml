@@ -43,6 +43,7 @@ nav:
   - 'Setup': 'installation/kubernetes.md'
 - 'Technical Reference':
   - 'Image References': 'reference/index.md'
+  - 'Configuration Keys': 'reference/configs.md'
 - 'Operation Guide':
   - 'Preparing the Server': 'operation/server.md'
   - 'Managing the Vault': 'operation/vault.md'
