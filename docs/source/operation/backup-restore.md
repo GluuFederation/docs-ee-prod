@@ -162,15 +162,14 @@ kubectl delete -f ./couchbase-backup.yaml
     kubectl exec -ti opendj-0 -n gluu /bin/sh
     ```
     
-1.  Choose the backup of choice
-    ```bash
-    ls /opt/opendj/ldif
-    ```
-1.  Preform the restore using the `import-ldif` command.
+1.  Choose the backup of choice and rename it to `backup-this-copy.ldif`. The `pygluu-kubernetes.pyz` will preform the import.
 
     ```bash
-    /opt/opendj/bin/import-ldif -n userRoot -l /opt/opendj/ldif/backup-1.ldif
+    ls /opt/opendj/ldif
+    cd /opt/opendj/ldif
+    cp backup-1.ldif backup-this-copy.ldif
     ```
+    
 1.  Run :
 
      ```bash
