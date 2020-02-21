@@ -31,6 +31,12 @@ kubectl delete -f ./couchbase-backup.yaml
 
 ### Restore from backup
 
+Please save a copy of the configurations to a file.
+
+```bash
+kubectl get cm gluu -n <Gluu-namespace> -o yaml > configs-<date>.yaml
+kubectl get secret gluu -n <Gluu-namespace> -o yaml > secrets-<date>.yaml
+```
 !!! Note
     An existing Gluu setup must exist for this to work. Please do not attempt to delete any resources and be very careful in handling Gluu configurations and secrets.
 
