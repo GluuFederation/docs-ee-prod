@@ -4,7 +4,7 @@
 
 
 ## Overview
-The Gluu Server supports installation via Kubernetes. 
+The Gluu Server supports installation via Kubernetes.
 
 ## Features
 - Consistent Environments
@@ -19,7 +19,7 @@ If you have questions or feedback, please open a ticket on the [Gluu support por
 
 !!! Note
     Support for Enterprise Edition deployments is only guaranteed under [Enterprise support plans](https://gluu.org/pricing).
-    
+
 ## License
 
-Gluu Server EE is available under the [GLUU SUPPORT license](https://github.com/GluuFederation/enterprise-edition/blob/4.0/LICENSE).
+Gluu Server EE is available under the [GLUU SUPPORT license](https://www.gluu.org/license/enterprise-edition/).
