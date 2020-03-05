@@ -14,8 +14,6 @@ edit_uri: edit/4.1/docs/source
 # Configuration
 theme:
     name: material
-    feature:
-        tabs: true
     palette:
         primary: 'green'
         accent: 'green'
